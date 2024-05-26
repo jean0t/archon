@@ -1,6 +1,8 @@
-# ARCHON PACKAGE MANAGER
-## A minimalist low level package manager for your linux
-
+<div align="center">
+  <img src="https://github.com/jean0t/archon/assets/127698173/835e829d-7707-4925-bc14-6fed239b2700" alt="cat" width="150px">
+  <h1>ARCHON PACKAGE MANAGER</h1>
+  <h2>A minimalist low level package manager for your linux</h2>
+</div>
 Created entirely in Bourne Shell, it is guarateed portability with all unix systems.  
 Manipulates its own extension `.archon`  
 
