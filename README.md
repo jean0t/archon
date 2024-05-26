@@ -8,4 +8,12 @@ Manipulates its own extension `.archon`
 
 Wants to create your own linux distro and want a low level package manager with its custom type of package? Why not use Archonpkg? It offers all you need to install packages, from creating to installing.
 
+## How to use
+
+### creating a package
+You use the command:
+```
+createpkg -c <name of the package>-<version>-<build>.archon
+``` 
+
 ## Creator: Jean0t
