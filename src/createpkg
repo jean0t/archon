@@ -12,6 +12,11 @@
 #============================| GLOBAL VARIABLES
 export pkg_extension="archon"
 
+# desabiliting support to unicode
+# for better performance
+export LC_ALL=C
+export LANG=C
+
 #============================| FUNCTIONS
 CHECK_PKG() {
 	pkg_name="$@"
@@ -44,25 +49,79 @@ CHECK_PKG() {
 CREATE_PKG() {
 	pkg_name="$1" # receive the name of the package
 
-	if tar -cvf ../${pkg_name} .; then
-		printf "%s\n" "The package was created in ../${pkg_name}"
-		return 0
+	if [ "$VERBOSE" = '1' ]; then
+		if tar -cvf ../${pkg_name} .; then
+			printf "%s\n" "The package was created in ../${pkg_name}"
+			return 0
+		else
+			printf "%s\n" "The package ${pkg_name} wasn't created."
+			exit 1
+		fi
 	else
-		printf "%s\n" "The package ${pkg_name} was not created."
-		exit 1
+		if tar -cvf ../${pkg_name} .; then
+			printf "%s\n" "The package was created in ../${pkg_name}"
+			return 0
+		else
+			printf "%s\n" "The package ${pkg_name} was not created."
+			exit 1
+		fi
 	fi
 }
 
-#============================| START
+USAGE () {
+	cat <<EOF
+createpkg - OPTIONS
+
+	create, -c
+		Creates a package .archon. It has to be used inside the
+		main directory to be generated. It will be generated one
+		directory above.
+		
+	verbose, -v
+		More detailed informations about the process.
+
+Author: Jean0t
+EOF
+}
+#============================| PARSER
+if [ -z "$1" ]; then
+	USAGE
+fi
+
+while [ -n "$1" ]; do
 case "$1" in
 	create|-c)
+		CMD=$1
+		shift
+		;;
+
+	verbose|-v)
+		VERBOSE=1
+		shift
+		;;
+		
+	*.archon)
+		PKG=$1
+		shift
+		;;
+
+	*) 
+		USAGE
+		exit 0
+		;;
+esac
+done
+
+#============================| START
+case "$CMD" in
+	create|-c)
 			shift
-			if [ -z "$1" ]; then
+			if [ -z "$CMD" ]; then
 				printf "%s\n" "No package was passed."
 				exit 1
 			fi
-			CHECK_PKG "$@" || exit 1
-			CREATE_PKG "$@"
+			CHECK_PKG "$PKG" || exit 1
+			CREATE_PKG "$PKG"
 		;;
 esac
 
