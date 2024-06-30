@@ -1,0 +1,52 @@
+#!/bin/sh
+
+#======================================| INFO
+# Install packages created to be used
+# by archon package manager
+
+# Author: Jean0t
+# Contact: https://github.com/jean0t
+
+#======================================| CONFIG
+TRACK='/var/log/installed' # track the packet
+
+#======================================| FUNCTIONS
+INSTALL () {
+	local package="$1"
+	name_package=$(basename $package)
+	name_package="${name_package//.archon/}"
+
+
+	echo "======> Installation initialized"
+
+	if tar xvf "$package" -C / >> "${TRACK}/${package}.track"; then
+		echo "Installation successful"
+	else
+		echo "An error occurred, package was not installed"
+		exit 1
+	fi
+
+	# removing ./ and blank lines
+	if sed -i 's,\.\/,,g; /^$/d' "${TRACK}/${name_package}.track"; then
+	else
+		echo "Error cleaning the output for the track"
+		exit 1
+	fi
+}
+
+#======================================| START
+[ ! -d "$TRACK" ] && mkdir -v "$TRACK"
+
+case $1 in
+	-i|--install)
+		shift
+		if [ -e "$1" ]; then
+			INSTALL $1
+		else
+			echo "Package doesn't exist."
+			exit 1
+		fi
+	;;
+
+
+#======================================| END
