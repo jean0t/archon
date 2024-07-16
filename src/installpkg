@@ -7,6 +7,12 @@
 # Author: Jean0t
 # Contact: https://github.com/jean0t
 
+# Changelog
+#	- Version 1.0
+#	-	- installing one package
+#	- Version 1.1
+#	-	-	installing multiple packages
+#	-	-	support to package info
 #======================================| CONFIG
 TRACK='/var/log/installed' # track the packet
 
@@ -27,11 +33,36 @@ INSTALL () {
 	fi
 
 	# removing ./ and blank lines
-	if sed -i 's,\.\/,,g; /^$/d' "${TRACK}/${name_package}.track"; then
+	if sed -i 's,\.\/,,g; /^$/d; /^desc\/$/d; /^desc\/pkgdesc$/d;' "${TRACK}/${name_package}.track"; then
+		echo "Cleaning executed"
 	else
 		echo "Error cleaning the output for the track"
 		exit 1
 	fi
+}
+
+# Package description
+DESC () {
+
+	local pkg="$@"
+	local dirtemp=$(mktemp -d)
+
+	# Verify if the pkgdesc exists
+	if tar -tf "$pkg" "./desc/pkgdesc" 1> /dev/null 2>/dev/null; then
+		if tar -xf $pkg" -C "$dirtemp" "./desc/pkgdesc"; then
+			. "$dirtemp/desc/pkgdesc"
+			echo '=====================Description====================='
+			echo "Maintainer: $maintainer"
+			echo "Package: $package"
+			echo "Description: $description"
+			echo '====================================================='
+		fi
+
+		else
+			echo 'Description file does not exist'
+	fi
+
+	[ -e "$dirtemp ] && { rm -r "$dirtemp"; }
 }
 
 #======================================| START
@@ -40,12 +71,17 @@ INSTALL () {
 case $1 in
 	-i|--install)
 		shift
-		if [ -e "$1" ]; then
-			INSTALL $1
-		else
-			echo "Package doesn't exist."
-			exit 1
-		fi
+		while [ -n "$1" ]; do
+			if [ -e "$1" ]; then
+				DESC "$1"
+				INSTALL "$1"
+				shift
+				continue
+			else
+				echo "Package doesn't exist."
+				exit 1
+			fi
+		done
 	;;
 
 

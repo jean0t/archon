@@ -10,7 +10,8 @@
 # in 25/05/2024
 # https://github.com/jean0t
 #============================| GLOBAL VARIABLES
-export pkg_extension="archon"
+export version='1.1'
+export pkg_extension='archon'
 
 # desabiliting support to unicode
 # for better performance
@@ -83,6 +84,27 @@ createpkg - OPTIONS
 Author: Jean0t
 EOF
 }
+
+GENERATE_PKGDESC() {
+	if [ ! -d "desc" ]; then
+		mkdir -v desc
+	fi
+
+	cat <<EOF>desc/pkgdesc
+# Maintainer
+maintainer=''
+
+# Package Name
+name=''
+
+# Description
+description=''
+
+# Website
+url=''
+EOF
+}
+
 #============================| PARSER
 if [ -z "$1" ]; then
 	USAGE
@@ -91,9 +113,14 @@ fi
 while [ -n "$1" ]; do
 case "$1" in
 	create|-c)
-		CMD=$1
+		CMD="$1"
 		shift
 		;;
+
+	pkgdesc)
+		CMD='pkgdesc'
+		shift
+	;;
 
 	verbose|-v)
 		VERBOSE=1
@@ -101,7 +128,7 @@ case "$1" in
 		;;
 		
 	*.archon)
-		PKG=$1
+		PKG="$1"
 		shift
 		;;
 
@@ -123,6 +150,10 @@ case "$CMD" in
 			CHECK_PKG "$PKG" || exit 1
 			CREATE_PKG "$PKG"
 		;;
+	
+	pkgdesc)
+		GENERATE_PKGDESC
+	;;
 esac
 
 #============================| END
