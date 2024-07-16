@@ -16,4 +16,9 @@ You use the command:
 createpkg -c <name of the package>-<version>-<build>.archon
 ``` 
 
+### installing a package
+you use the command:
+```
+installpkg -i <name of the package>.archon
+```
 ## Creator: Jean0t
