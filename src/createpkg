@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 #============================| INFO
 # This file is part of a bigger project

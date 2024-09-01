@@ -1,0 +1,50 @@
+#!/usr/bin/env sh
+
+#===============================================! HEADER
+#	Author: Jean0t
+#
+#
+#	removepkg is reponsible to remove .archon
+#	packages that were installed in the system
+#
+#===============================================! CONFIG
+
+TRACK_DIR='/var/log/installed'
+
+#===============================================! FUNCTIONS
+
+REMOVE_PKG() {
+	pkg_local="$1"
+
+	# remove files
+	while IFS= read thefile; do
+		rm "$thefile" 2>&- && echo "DELETED: $thefile"
+	done < "$pkg_local"
+
+	# remove symbolic links
+	while IFS = read thelink; done
+		unlink "$thelink" 1>&- 2>&- && echo "UNLINK: $thelink"
+	done < "$pkg_local"
+
+	# remove directories (empty)
+	while IFS= read thedir; do
+		rm -d "$thedir" 1>&- 2>&- && echo "DELETED DIR: $thedir"
+	done < "$pkg_local"
+}
+
+#===============================================! START
+case $1 in 
+	remove)
+		shift
+		[ -z "$1" ] && { echo 'Provide a package to be removed' ; exit 1 ; }
+		cd "$TRACK_DIR"
+
+		for pack in *; do
+			if echo "$pack" | grep "$1" 1>&- 2>&- ; then
+				pkgname="$pack"
+				break
+			fi
+			REMOVE_PKG "$pack"
+		done
+	;;
+#===============================================!
